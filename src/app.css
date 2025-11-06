@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Azeret';
+    src: url('/AzeretMono-Regular.ttf');
+}
+@font-face {
+    font-family: 'Monument';
+    src: url('/PPMonumentExtended-Regular.ttf');
+}
+
+.font-monument {
+    font-family: 'Monument';
+}
+
+.font-all-font-family {
+    font-family: 'Azeret';
+}
+.text-all-font-size {
+    font-size: 12px;
+}
+.font-big-font-family {
+    font-family: 'Azeret';
+}
+.text-big-font-size {
+    font-size: 16px
+}
