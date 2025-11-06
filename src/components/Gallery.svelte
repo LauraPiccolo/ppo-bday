@@ -49,7 +49,7 @@
       options: {
         width,
         height,
-        background: '#fafafa',
+        background: 'transparent',
         wireframes: false
       }
     });
@@ -134,6 +134,7 @@
     display: block;
     width: 100vw;
     height: 100vh;
-    background: #fafafa;
+    background-color: transparent;
+    /* background: #fafafa; */
   }
 </style>
