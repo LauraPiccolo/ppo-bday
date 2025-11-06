@@ -42,6 +42,7 @@
     // Create engine and renderer
     engine = Engine.create();
     const world = engine.world;
+    world.gravity.y = 0.5
 
     render = Render.create({
       element: container,
@@ -64,6 +65,7 @@
 
     // --- ADD IMAGES AS BODIES ---
     const bodies = images.map((img, i) => {
+      console.log(img)
       const x = Common.random(100, width - 100);
       const y = Common.random(100, height - 200);
       return Bodies.rectangle(x, y, baseSize, baseSize, {
@@ -72,6 +74,7 @@
         render: {
           sprite: {
             texture: img,
+            strokeStyle: 'red',
             xScale: baseSize / 100,
             yScale: baseSize / 100
           }
