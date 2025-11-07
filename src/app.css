@@ -27,3 +27,11 @@
 .text-big-font-size {
     font-size: 16px
 }
+
+.main-container {
+    height: 199px !important;
+}
+
+.alpha-selector, .color-info-box {
+    display: none !important;
+}

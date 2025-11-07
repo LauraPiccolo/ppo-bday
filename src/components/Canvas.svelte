@@ -13,18 +13,20 @@
   };
 
   const rgba2hex = (rgb) => {
-    const toHex = (v) => v.toString(16).padStart(2, '0');
+    const toHex = (v) => v.toString(16).padStart(2, "0");
     return `#${toHex(rgb.r)}${toHex(rgb.g)}${toHex(rgb.b)}`;
-  }
+  };
 
   export let width = 600;
   export let height = 600;
   export let color = generateRandomColor();
-    console.log(color)
+  let colorPickerOpen = false;
   export let background = "transparent";
 
   let changeColor = (rgba) => {
     color = rgba2hex(rgba.detail);
+    changeColorOnCanvas()
+    // colorPickerOpen = false;
   };
 
   let acceptableTerms = [
@@ -71,15 +73,15 @@
     setTimeout(() => {
       context = canvas.getContext("2d");
       context.strokeStyle = color;
-      context.lineWidth = 3;
-      console.log(context)
-    }, 100)
+      context.lineWidth = 8;
+      console.log(context);
+    }, 100);
   });
 
   $: if (context && color) {
     // console.log('CHANGING COLOR');
-    console.log(color)
-    // context.strokeStyle = color;
+    console.log(color);
+    context.strokeStyle = color;
     // context.fillStyle = '#fff'
   }
 
@@ -95,7 +97,7 @@
 
   const clearCanvas = () => {
     context.clearRect(0, 0, width, height);
-  }
+  };
 
   const handleEnd = () => {
     console.log("END");
@@ -113,8 +115,8 @@
     context.lineTo(x1, y1);
     context.stroke();
     context.closePath();
-    context.fill()
-    if(!strokes[currentStroke]) strokes.push([x, y, new Date()]);
+    context.fill();
+    if (!strokes[currentStroke]) strokes.push([x, y, new Date()]);
     strokes[currentStroke].push([x1, y1, new Date()]);
 
     start = { x: x1, y: y1 };
@@ -232,21 +234,83 @@
       .catch(console.error);
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "x") clearCanvas();
+    if (e.key === "c") colorPickerOpen = true;
+    if (e.key === "z") removeLastStroke();
+  };
+
+  onMount(() => {
+    window.addEventListener("keypress", handleKeyPress);
+  });
+
+  const removeLastStroke = () => {
+    if (strokes.length === 0 || context === undefined) return;
+
+    // Remove last stroke from memory
+    strokes.pop();
+    currentStroke --;
+
+    // Clear and redraw everything else
+    context.clearRect(0, 0, width, height);
+    context.beginPath();
+
+    for (let i = 0; i < strokes.length; i++) {
+      const stroke = strokes[i];
+      const startX = stroke[0];
+      const startY = stroke[1];
+      context.moveTo(startX, startY);
+
+      // Start from index 3 because 0,1,2 are metadata
+      for (let j = 3; j < stroke.length; j++) {
+        const [x1, y1] = stroke[j];
+        context.lineTo(x1, y1);
+      }
+    }
+
+    context.stroke();
+  };
+
+  const changeColorOnCanvas = () => {
+      if (strokes.length === 0 || context === undefined) return;
+     context.clearRect(0, 0, width, height);
+    context.beginPath();
+
+    for (let i = 0; i < strokes.length; i++) {
+      const stroke = strokes[i];
+      const startX = stroke[0];
+      const startY = stroke[1];
+      context.moveTo(startX, startY);
+
+      // Start from index 3 because 0,1,2 are metadata
+      for (let j = 3; j < stroke.length; j++) {
+        const [x1, y1] = stroke[j];
+        context.lineTo(x1, y1);
+      }
+    }
+
+    context.stroke();
+  }
 </script>
 
 <svelte:window on:resize={handleSize} />
 
 <!-- <p>{results.join(", ")}</p> -->
-{#if acceptableDrawing === true}
-  NICE CROCODILE!
-{/if}
 
 <!-- <p on:click={handleClick}>TEST FILL</p> -->
 
-<HsvPicker on:colorChange={changeColor} startColor={color} />
+<div
+  class="absolute bottom-[105px] left-[20px] z-30 transition-[.5s]"
+  style="opacity: {colorPickerOpen ? 1 : 0}; pointer-events: {colorPickerOpen
+    ? 'auto'
+    : 'none'}"
+  on:mouseleave={() => (colorPickerOpen = false)}
+>
+  <HsvPicker on:colorChange={changeColor} startColor={color} />
+</div>
 
 <canvas
-class="absolute left-0 top-0"
+  class="absolute left-0 top-0"
   {width}
   {height}
   style:background
@@ -272,8 +336,42 @@ class="absolute left-0 top-0"
   }}
 />
 
-<button class="draw__send" on:click={() => modifyStory(canvas.toDataURL())}>
-  I'M DONE
-</button>
-
-<button on:click={clearCanvas} class="z-1 absolute">Clear</button>
+<div
+  class="flex flex-row items-end justify-between shrink-0 z-30 absolute bottom-[20px] w-[calc(100vw-40px)]"
+>
+  <div
+    class="text-[#484747] text-left font-all-font-family text-all-font-size leading-all-line-height font-all-font-weight relative z-20"
+  >
+    <span on:click={removeLastStroke}>CANCEL LAST LINE [Z]</span>
+    <br />
+    <span on:click={clearCanvas}>CLEAR CANVAS [X]</span>
+    <br />
+    <span
+      on:click={() => {
+        colorPickerOpen = true;
+      }}>CHANGE COLOR [C]</span
+    >
+    <br />
+    <a href="/gallery" style="opacity: 0.5;">SKIP TO GALLERY -></a>
+  </div>
+  {#if acceptableDrawing === true}
+    <div
+      class="text-[#484747] text-center font-big-font-family text-big-font-size leading-big-line-height font-big-font-weight relative font-all-font-family text-all-font-size"
+    >
+      NICE CROCODILE!
+    </div>
+  {/if}
+  <div
+    class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 cursor-pointer"
+    style="background-color: {color}; opacity: {acceptableDrawing === true
+      ? 1
+      : 0.5}"
+    on:click={() => modifyStory(canvas.toDataURL())}
+  >
+    <div
+      class="text-[#ffffff] text-left font-all-font-family text-all-font-size relative"
+    >
+      MY CRODODILE IS DONE →
+    </div>
+  </div>
+</div>
