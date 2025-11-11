@@ -180,8 +180,8 @@
 {#if gyroscopePossible === false || gyroscopePermission === true}
 <a
   href="/"
-  class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 absolute bottom-[20px] draw-link"
-  style="right: {gyroscopePermission === true ? 'unset':'20px'}"
+  class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 absolute bottom-[20px] draw-link s:bottom-[40px] right-[20px] s:right-[unset]"
+
 >
   <button class="text-left font-all-font-family text-all-font-size relative">
     DRAW YOUR CROCODILE →
@@ -191,7 +191,7 @@
 
 {#if gyroscopePossible && gyroscopePermission === false}
 <button
-  class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 absolute right-[20px] bottom-[20px] draw-link" on:click={allowGyroscope}
+  class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 absolute right-[20px] bottom-[20px] draw-link s:right-unset" on:click={allowGyroscope}
 >
   <p class="text-left font-all-font-family text-all-font-size relative">
     ALLOW GYROSCOPE FOR MORE FUN →

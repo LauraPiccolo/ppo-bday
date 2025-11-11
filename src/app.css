@@ -29,6 +29,9 @@
 }
 
 @media (max-width: 600px) {
+    .cursor {
+        display: none !important;
+    }
     .key-code {
         display: none;
     }
@@ -71,3 +74,4 @@ h1 {
 @keyframes fadeIn {
     100% {opacity: 1;}
 }
+

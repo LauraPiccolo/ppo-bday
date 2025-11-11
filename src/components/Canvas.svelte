@@ -78,7 +78,7 @@
       context.lineJoin = "round";
       context.lineCap = "round";
       context.lineWidth = 9;
-      console.log(context);
+      // console.log(context);
     }, 100);
   });
 
@@ -93,6 +93,7 @@
     if (color === background) {
       context.clearRect(0, 0, width, height);
     } else {
+      // console.log(x, y)
       isDrawing = true;
       start = { x, y };
       strokes.push([x, y, new Date()]);
@@ -115,7 +116,7 @@
   const handleMove = (test) => {
     let x1 = test.offsetX;
     let y1 = test.offsetY;
-    console.log(test)
+    // console.log(test)
     cursor = {
       opacity: 1,
       x: test.clientX,
@@ -140,7 +141,7 @@
     const { top, left } = canvas.getBoundingClientRect();
     // width = window.innerWidth;
     // height = window.innerHeight;
-    console.log(top, left)
+    // console.log(top, left)
     t = top;
     l = left;
   };
@@ -380,8 +381,9 @@
   on:touchstart={(e) => {
     const { clientX, clientY } = e.touches[0];
     handleStart({
-      offsetX: clientX - l,
-      offsetY: clientY - t,
+      ...e,
+      offsetX: clientX,
+      offsetY: clientY,
     });
   }}
   on:mouseup={handleEnd}
@@ -391,8 +393,9 @@
   on:touchmove={(e) => {
     const { clientX, clientY } = e.touches[0];
     handleMove({
-      offsetX: clientX - l,
-      offsetY: clientY - t,
+      ...e,
+      offsetX: clientX,
+      offsetY: clientY,
     });
   }}
 />
@@ -419,7 +422,7 @@
   </div>
 
   <div
-    class="text-[#484747] text-center font-big-font-family text-big-font-size leading-big-line-height font-big-font-weight relative font-all-font-family text-all-font-size uppercase w-[250px] h-[48px] s:fixed s:bottom-[10vh] s:w-full s:text-center s:ml-[-0px] text-balance pointer-events-none"
+    class="text-[#484747] text-center font-big-font-family text-big-font-size leading-big-line-height font-big-font-weight relative font-all-font-family text-all-font-size uppercase w-[250px] h-[48px] s:fixed s:bottom-[20vh] s:w-full s:text-center s:ml-[-0px] text-balance pointer-events-none"
   >
     {#if acceptableDrawing === true}
       NICE CROCODILE!
@@ -432,7 +435,7 @@
   <!-- <p>test: {currentStroke}</p> -->
 
     <div
-      class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 cursor-pointer button-submit uppercase w-[270px]"
+      class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 cursor-pointer button-submit uppercase w-[270px] s:mb-[20px]"
       style="background-color: {color}; opacity: {currentStroke <= 1 ? 0 : acceptableDrawing === true
         ? 0.9
         : 0.5}; pointer-events: {currentStroke <= 1 ?'none':'auto'}"
