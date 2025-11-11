@@ -93,7 +93,6 @@
         render: {
           sprite: {
             texture: img,
-            strokeStyle: "red",
             xScale: baseSize / 300,
             yScale: baseSize / 300,
             // frictionAir: 0.001
@@ -134,6 +133,7 @@
       console.log('device orientation exists')
       gyroscopePossible = true
       window.addEventListener("deviceorientation", (event) => {
+        gyroscopePermission = true
         // event.beta  = front/back tilt (-180 to 180)
         // event.gamma = left/right tilt (-90 to 90)
 
@@ -177,14 +177,17 @@
 
 <div bind:this={container} class="physics-container"></div>
 
+{#if gyroscopePossible === false || gyroscopePermission === true}
 <a
   href="/"
-  class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 absolute right-[20px] bottom-[20px] draw-link"
+  class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 absolute bottom-[20px] draw-link"
+  style="right: {gyroscopePermission === true ? 'unset':'20px'}"
 >
   <button class="text-left font-all-font-family text-all-font-size relative">
     DRAW YOUR CROCODILE →
   </button>
 </a>
+{/if}
 
 {#if gyroscopePossible && gyroscopePermission === false}
 <button
@@ -214,17 +217,20 @@
   }
 
   .draw-link {
-    backdrop-filter: blur(4px);
-    background-color: #ffffff80;
-    border: solid 1px white;
+    /* backdrop-filter: blur(4px); */
+    background-color: #ffffff;
+    /* border: solid 1px white; */
     /* color: #a0a5a2; */
     color: black;
     transition-duration: 0.3s;
     cursor: pointer;
   }
 
-  .draw-link:hover {
-    background-color: #ffffff;
-    color: black;
+  @media (min-width: 1040px) {
+    .draw-link:hover {
+          background-color: black;
+          color: white;
+    }
   }
+
 </style>

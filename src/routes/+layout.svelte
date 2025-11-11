@@ -19,7 +19,7 @@
       <a href="/">7TH BIRTHDAY</a>
     </div>
     <div
-      class="text-[#484747] text-right font-all-font-family text-all-font-size leading-all-line-height font-all-font-weight relative]"
+      class="text-[#484747] text-right font-all-font-family text-all-font-size leading-all-line-height font-all-font-weight relative] s:hidden"
       style="opacity: 0.5"
     >
       <a href="https://piccolora.fr" target="_blank">WEBSITE BY LAURA PICCOLO</a>

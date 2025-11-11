@@ -1,5 +1,6 @@
 <script>
   import { goto } from "$app/navigation";
+  import { text } from "@sveltejs/kit";
   import StoryblokClient from "storyblok-js-client";
   import { onMount } from "svelte";
   import { HsvPicker } from "svelte-color-picker";
@@ -83,7 +84,7 @@
 
   $: if (context && color) {
     // console.log('CHANGING COLOR');
-    console.log(color);
+    // console.log(color);
     context.strokeStyle = color;
     // context.fillStyle = '#fff'
   }
@@ -101,21 +102,25 @@
   const clearCanvas = () => {
     context.clearRect(0, 0, width, height);
     currentStroke = 0
+    strokes = []
   };
 
   const handleEnd = () => {
-    // cursor.opacity = 0;
+    cursor.opacity = 0;
     quickDraw();
     currentStroke++;
     isDrawing = false;
   };
 
-  const handleMove = ({ offsetX: x1, offsetY: y1 }) => {
-    // cursor = {
-    //   opacity: 1,
-    //   x: x1,
-    //   y: y1
-    // }
+  const handleMove = (test) => {
+    let x1 = test.offsetX;
+    let y1 = test.offsetY;
+    console.log(test)
+    cursor = {
+      opacity: 1,
+      x: test.clientX,
+      y: test.clientY
+    }
     if (!isDrawing) return;
 
     const { x, y } = start;
@@ -133,6 +138,9 @@
 
   const handleSize = () => {
     const { top, left } = canvas.getBoundingClientRect();
+    // width = window.innerWidth;
+    // height = window.innerHeight;
+    console.log(top, left)
     t = top;
     l = left;
   };
@@ -193,12 +201,15 @@
     let parseResponse = function (response) {
       let parsed = JSON.parse(response);
       let list = parsed[1][0][1];
-      console.log(list);
+      // console.log(list);
       results = list;
       acceptableDrawing = false;
       for (let i = 0; i < list.length; i++) {
         for (let j = 0; j < acceptableTerms.length; j++) {
-          if (list[i] === acceptableTerms[j]) acceptableDrawing = true;
+          if (list[i] === acceptableTerms[j]) {
+            acceptableDrawing = true; 
+            // console.log(list[i], acceptableTerms[j])
+          }
         }
       }
     };
@@ -211,6 +222,7 @@
   let footerOpacity = 1;
 
   const modifyStory = (picture, approved) => {
+    buttonMessage = 'Processing ...'
     Storyblok.post("spaces/288321122877523/assets/", {
       filename: `croco--${(Math.random() + 1).toString(36).substring(7)}.png`,
       size: "400x600",
@@ -307,7 +319,8 @@
 
   let middleMessage = "Draw a crocodile";
 
-  const handleButtonClick = (approved) => {
+  const handleButtonClick = (e, approved) => {
+    // alert(e.type)
     modifyStory(canvas.toDataURL(), approved);
   };
 
@@ -315,16 +328,13 @@
   let manualTimeout;
 
   let handleMouseLeave = (timing) => {
-    console.log("mouse leave!");
     if (manualTimeout) clearTimeout(manualTimeout);
     manualTimeout = setTimeout(() => {
-      console.log("time out!");
       manualOpacity = 0;
     }, timing);
   };
 
   let handleMouseEnter = () => {
-    console.log("mouse enter!");
     if (manualTimeout) clearTimeout(manualTimeout);
     manualOpacity = 0.5;
   };
@@ -335,14 +345,6 @@
     y: -100,
   };
 
-  let moveCursor = (e) => {
-    console.log(e.clientX);
-    cursor = {
-      opacity: 1,
-      x: e.clientX,
-      y: e.clientY,
-    };
-  };
 
    let buttonMessage = "My crocodile is done ->"
 </script>
@@ -350,8 +352,8 @@
 <svelte:window on:resize={handleSize} />
 
 <div
-  class="cursor w-[12px] h-[12px] rounded-[50%] absolute z-40 ml-[-2px] mt-[-2px]"
-  style="opacity: {cursor.opacity}; left: {cursor.x}px; top: {cursor.y}px; z-index: 1000; background-color: {color}"
+  class="cursor w-[12px] h-[12px] rounded-[50%] absolute z-40"
+  style="opacity: {cursor.opacity}; left: {cursor.x}px; top: {cursor.y}px; z-index: 1000; background-color: {color}; pointer-events: none; transform: translateY(-50%) translateX(-50%)"
 />
 
 <!-- <p>{results.join(", ")}</p> -->
@@ -359,7 +361,7 @@
 <!-- <p on:click={handleClick}>TEST FILL</p> -->
 
 <div
-  class="absolute bottom-[105px] left-[20px] z-30"
+  class="absolute bottom-[105px] left-[20px] z-30 s:right-[19px] s:left-[unset] s:bottom-[unset] s:top-[130px]"
   style="opacity: {colorPickerOpen ? 1 : 0}; transition: .5s opacity;
   pointer-events: {colorPickerOpen ? 'auto' : 'none'}"
   on:mouseleave={() => (colorPickerOpen = false)}
@@ -368,7 +370,7 @@
 </div>
 
 <canvas
-  class="absolute top-0"
+  class="absolute top-0 cursor-none"
   style="opacity: {footerOpacity}; transition: .9s opacity;"
   {width}
   {height}
@@ -396,32 +398,35 @@
 />
 
 <div
-  class="flex flex-row items-end justify-between shrink-0 z-30 absolute bottom-[20px] w-[calc(100vw-40px)]"
+  class="flex flex-row items-end justify-between shrink-0 z-30 absolute bottom-[20px] w-[calc(100vw-40px)] s:justify-center"
   style="opacity: {footerOpacity}; transition: .9s opacity;"
 >
   <div
-    class="text-[#484747] text-left font-all-font-family text-all-font-size leading-all-line-height font-all-font-weight relative z-20"
+    class="text-[#484747] text-left font-all-font-family text-all-font-size leading-all-line-height font-all-font-weight relative z-20 s:fixed s:top-[50px] s:right-[20px] s:text-right s:opacity-50 uppercase"
   >
-    <span on:click={removeLastStroke}>CANCEL LAST LINE [Z]</span>
+    <span on:click={removeLastStroke} class="cursor-pointer">Cancel last line <span class="key-code">[Z]</span></span>
     <br />
-    <span on:click={clearCanvas}>CLEAR CANVAS [X]</span>
+    <span on:click={clearCanvas} class="cursor-pointer">Clear canvas <span class="key-code">[X]</span></span>
     <br />
     <span
+    class="cursor-pointer"
       on:click={() => {
         colorPickerOpen = true;
-      }}>CHANGE COLOR [C]</span
+      }}>Pick another color <span class="key-code">[C]</span></span
     >
     <br />
-    <a href="/gallery" style="opacity: 0.5;">SKIP TO GALLERY -></a>
+    <a href="/gallery" class="opacity-50 s:opacity-100">Skip to gallery -></a>
   </div>
 
   <div
-    class="text-[#484747] text-center font-big-font-family text-big-font-size leading-big-line-height font-big-font-weight relative font-all-font-family text-all-font-size uppercase w-[250px]"
+    class="text-[#484747] text-center font-big-font-family text-big-font-size leading-big-line-height font-big-font-weight relative font-all-font-family text-all-font-size uppercase w-[250px] h-[48px] s:fixed s:bottom-[10vh] s:w-full s:text-center s:ml-[-0px] text-balance pointer-events-none"
   >
     {#if acceptableDrawing === true}
       NICE CROCODILE!
     {:else}
-      {middleMessage}
+      {#if currentStroke <= 1} Draw your crocodile!
+      {:else} This doesn't look like a crododile yet ...
+      {/if}
     {/if}
   </div>
   <!-- <p>test: {currentStroke}</p> -->
@@ -430,27 +435,20 @@
       class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 cursor-pointer button-submit uppercase w-[270px]"
       style="background-color: {color}; opacity: {currentStroke <= 1 ? 0 : acceptableDrawing === true
         ? 0.9
-        : 0.5}"
-      on:click={() => handleButtonClick(acceptableDrawing)}
-      on:mouseover={() => {
-        if (acceptableDrawing === false) {
-          middleMessage = "We're pretty sure this is not a crocodile :(";
-          buttonMessage = "Submit for manual review"
-        }
-        handleMouseEnter();
-      }}
+        : 0.5}; pointer-events: {currentStroke <= 1 ?'none':'auto'}"
+      on:click={(e) => handleButtonClick(e, acceptableDrawing)}
+      on:mouseover={handleMouseEnter}
       on:mouseleave={() => {
-        if (acceptableDrawing === false) {
-          middleMessage = "Draw a crocodile";
-          buttonMessage = "My crocodile is done ->"
-        }
         handleMouseLeave(4000);
       }}
     >
       <div
         class="text-[#ffffff] text-left font-all-font-family text-all-font-size relative"
       >
-        {buttonMessage}
+        <!-- {buttonMessage} -->
+        {#if acceptableDrawing} {buttonMessage}
+        {:else} {buttonMessage.indexOf('rocessing') > -1 ? buttonMessage:'Submit for manual review'}
+        {/if}
       </div>
     </div>
 </div>

@@ -28,6 +28,19 @@
     font-size: 16px
 }
 
+@media (max-width: 600px) {
+    .key-code {
+        display: none;
+    }
+    .text-all-font-size {
+    font-size: 10px;
+}
+.text-big-font-size {
+    font-size: 14px;
+}
+
+}
+
 .main-container {
     height: 199px !important;
 }
@@ -48,4 +61,13 @@ h1 {
 
 .button-submit:hover {
     opacity: 1 !important;
+}
+
+.draw-link {
+    opacity: 0;
+    animation: fadeIn 1s forwards 1s;
+}
+
+@keyframes fadeIn {
+    100% {opacity: 1;}
 }
