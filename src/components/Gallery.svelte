@@ -24,17 +24,6 @@
       render.textures = {};
     }
     canvasInitTimeOut = setTimeout(() => initCanvas(), 500)
-    // width = window.innerWidth;
-    // height = window.innerHeight;
-    // console.log(width, height)
-    // if (render) {
-    //   render.canvas.width = width;
-    //   render.canvas.height = height;
-    //   Matter.Render.lookAt(render, {
-    //     min: { x: 0, y: 0 },
-    //     max: { x: width, y: height },
-    //   });
-    // }
   }
 
   const initCanvas = () => {
@@ -78,7 +67,7 @@
     // Smaller images when more are present
     // const baseSize = Math.max(40, 150 - images.length * 10);
     // const baseSize = 100;
-    let baseSize = (0.1 * window.innerWidth) - images.length / 2;
+    let baseSize = (0.06 * window.innerWidth) - images.length / 2;
     baseSize = baseSize < 50 ? 50 : baseSize;
 
     // --- ADD IMAGES AS BODIES ---
@@ -130,7 +119,6 @@
 
     if ( typeof DeviceOrientationEvent !== "undefined" &&
       typeof DeviceOrientationEvent.requestPermission === "function") {
-      console.log('device orientation exists')
       gyroscopePossible = true
       window.addEventListener("deviceorientation", (event) => {
         gyroscopePermission = true

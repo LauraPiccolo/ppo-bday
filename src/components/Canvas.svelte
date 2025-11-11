@@ -405,7 +405,7 @@
   style="opacity: {footerOpacity}; transition: .9s opacity;"
 >
   <div
-    class="text-[#484747] text-left font-all-font-family text-all-font-size leading-all-line-height font-all-font-weight relative z-20 s:fixed s:top-[50px] s:right-[20px] s:text-right s:opacity-50 uppercase"
+    class="text-[#484747] text-left font-all-font-family text-all-font-size leading-all-line-height font-all-font-weight relative z-20 s:fixed s:top-[50px] s:right-[20px] s:text-right s:opacity-50 uppercase w-[270px]"
   >
     <span on:click={removeLastStroke} class="cursor-pointer">Cancel last line <span class="key-code">[Z]</span></span>
     <br />

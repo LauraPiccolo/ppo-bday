@@ -1,7 +1,10 @@
 <script>
 	import '../app.css';
+  import Head from '$lib/Head.svelte';
 </script>
 
+
+<Head />
 <div
   class="bg-[#D7EADF] p-5 flex flex-col items-center justify-center h-[100dvh] overflow-hidden fixed w-full"
 >
