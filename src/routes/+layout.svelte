@@ -25,14 +25,13 @@
       <a href="https://piccolora.fr" target="_blank">WEBSITE BY LAURA PICCOLO</a>
     </div>
   </div>
-  <div
-    class="text-[#ffffff] text-center font-monument text-[216.42227172851562px] leading-[156.4px] font-normal relative"
-    style="letter-spacing: -0.12em"
+  <h1
+    class="text-[#ffffff] text-center font-monument font-normal relative"
   >
     PPO
     <br />
     BIRTHDAY
-  </div>
+</h1>
   
   <slot />
 </div>

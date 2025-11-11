@@ -1,4 +1,5 @@
 <script>
+  import { goto } from "$app/navigation";
   import StoryblokClient from "storyblok-js-client";
   import { onMount } from "svelte";
   import { HsvPicker } from "svelte-color-picker";
@@ -25,13 +26,13 @@
 
   let changeColor = (rgba) => {
     color = rgba2hex(rgba.detail);
-    changeColorOnCanvas()
+    changeColorOnCanvas();
     // colorPickerOpen = false;
   };
 
   let acceptableTerms = [
     // "The Great Wall of China",
-    "frog",
+    // "frog",
     "dragon",
     "monster",
     "crocodile",
@@ -73,7 +74,9 @@
     setTimeout(() => {
       context = canvas.getContext("2d");
       context.strokeStyle = color;
-      context.lineWidth = 8;
+      context.lineJoin = "round";
+      context.lineCap = "round";
+      context.lineWidth = 9;
       console.log(context);
     }, 100);
   });
@@ -97,16 +100,22 @@
 
   const clearCanvas = () => {
     context.clearRect(0, 0, width, height);
+    currentStroke = 0
   };
 
   const handleEnd = () => {
-    console.log("END");
+    // cursor.opacity = 0;
     quickDraw();
     currentStroke++;
     isDrawing = false;
   };
 
   const handleMove = ({ offsetX: x1, offsetY: y1 }) => {
+    // cursor = {
+    //   opacity: 1,
+    //   x: x1,
+    //   y: y1
+    // }
     if (!isDrawing) return;
 
     const { x, y } = start;
@@ -199,11 +208,13 @@
     oauthToken: "C4GK6qBPrnQEOzW6JdDQ9gtt-76603-RETtAmSBRqJ2CH1YfMz_",
   });
 
-  const modifyStory = (picture) => {
+  let footerOpacity = 1;
+
+  const modifyStory = (picture, approved) => {
     Storyblok.post("spaces/288321122877523/assets/", {
       filename: `croco--${(Math.random() + 1).toString(36).substring(7)}.png`,
       size: "400x600",
-      asset_folder_id: 109539565664797,
+      asset_folder_id: approved ? 109539565664797 : 111280685805820,
     })
       .then((response) => {
         const signed = response.data;
@@ -224,7 +235,9 @@
               Storyblok.get("spaces/288321122877523/assets/", {}).then(
                 (response) => {
                   // xList = response.data.assets;
-                  console.log(response.data.assets);
+                  // console.log(response.data.assets);
+                  footerOpacity = 0;
+                  setTimeout(() => goto("/gallery"), 1000);
                 }
               );
             })
@@ -249,7 +262,7 @@
 
     // Remove last stroke from memory
     strokes.pop();
-    currentStroke --;
+    currentStroke--;
 
     // Clear and redraw everything else
     context.clearRect(0, 0, width, height);
@@ -272,8 +285,8 @@
   };
 
   const changeColorOnCanvas = () => {
-      if (strokes.length === 0 || context === undefined) return;
-     context.clearRect(0, 0, width, height);
+    if (strokes.length === 0 || context === undefined) return;
+    context.clearRect(0, 0, width, height);
     context.beginPath();
 
     for (let i = 0; i < strokes.length; i++) {
@@ -290,27 +303,73 @@
     }
 
     context.stroke();
-  }
+  };
+
+  let middleMessage = "Draw a crocodile";
+
+  const handleButtonClick = (approved) => {
+    modifyStory(canvas.toDataURL(), approved);
+  };
+
+  let manualOpacity = 0;
+  let manualTimeout;
+
+  let handleMouseLeave = (timing) => {
+    console.log("mouse leave!");
+    if (manualTimeout) clearTimeout(manualTimeout);
+    manualTimeout = setTimeout(() => {
+      console.log("time out!");
+      manualOpacity = 0;
+    }, timing);
+  };
+
+  let handleMouseEnter = () => {
+    console.log("mouse enter!");
+    if (manualTimeout) clearTimeout(manualTimeout);
+    manualOpacity = 0.5;
+  };
+
+  let cursor = {
+    opacity: 0,
+    x: -100,
+    y: -100,
+  };
+
+  let moveCursor = (e) => {
+    console.log(e.clientX);
+    cursor = {
+      opacity: 1,
+      x: e.clientX,
+      y: e.clientY,
+    };
+  };
+
+   let buttonMessage = "My crocodile is done ->"
 </script>
 
 <svelte:window on:resize={handleSize} />
+
+<div
+  class="cursor w-[12px] h-[12px] rounded-[50%] absolute z-40 ml-[-2px] mt-[-2px]"
+  style="opacity: {cursor.opacity}; left: {cursor.x}px; top: {cursor.y}px; z-index: 1000; background-color: {color}"
+/>
 
 <!-- <p>{results.join(", ")}</p> -->
 
 <!-- <p on:click={handleClick}>TEST FILL</p> -->
 
 <div
-  class="absolute bottom-[105px] left-[20px] z-30 transition-[.5s]"
-  style="opacity: {colorPickerOpen ? 1 : 0}; pointer-events: {colorPickerOpen
-    ? 'auto'
-    : 'none'}"
+  class="absolute bottom-[105px] left-[20px] z-30"
+  style="opacity: {colorPickerOpen ? 1 : 0}; transition: .5s opacity;
+  pointer-events: {colorPickerOpen ? 'auto' : 'none'}"
   on:mouseleave={() => (colorPickerOpen = false)}
 >
   <HsvPicker on:colorChange={changeColor} startColor={color} />
 </div>
 
 <canvas
-  class="absolute left-0 top-0"
+  class="absolute top-0"
+  style="opacity: {footerOpacity}; transition: .9s opacity;"
   {width}
   {height}
   style:background
@@ -338,6 +397,7 @@
 
 <div
   class="flex flex-row items-end justify-between shrink-0 z-30 absolute bottom-[20px] w-[calc(100vw-40px)]"
+  style="opacity: {footerOpacity}; transition: .9s opacity;"
 >
   <div
     class="text-[#484747] text-left font-all-font-family text-all-font-size leading-all-line-height font-all-font-weight relative z-20"
@@ -354,24 +414,43 @@
     <br />
     <a href="/gallery" style="opacity: 0.5;">SKIP TO GALLERY -></a>
   </div>
-  {#if acceptableDrawing === true}
-    <div
-      class="text-[#484747] text-center font-big-font-family text-big-font-size leading-big-line-height font-big-font-weight relative font-all-font-family text-all-font-size"
-    >
-      NICE CROCODILE!
-    </div>
-  {/if}
+
   <div
-    class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 cursor-pointer"
-    style="background-color: {color}; opacity: {acceptableDrawing === true
-      ? 1
-      : 0.5}"
-    on:click={() => modifyStory(canvas.toDataURL())}
+    class="text-[#484747] text-center font-big-font-family text-big-font-size leading-big-line-height font-big-font-weight relative font-all-font-family text-all-font-size uppercase w-[250px]"
   >
-    <div
-      class="text-[#ffffff] text-left font-all-font-family text-all-font-size relative"
-    >
-      MY CRODODILE IS DONE →
-    </div>
+    {#if acceptableDrawing === true}
+      NICE CROCODILE!
+    {:else}
+      {middleMessage}
+    {/if}
   </div>
+  <!-- <p>test: {currentStroke}</p> -->
+
+    <div
+      class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 cursor-pointer button-submit uppercase w-[270px]"
+      style="background-color: {color}; opacity: {currentStroke <= 1 ? 0 : acceptableDrawing === true
+        ? 0.9
+        : 0.5}"
+      on:click={() => handleButtonClick(acceptableDrawing)}
+      on:mouseover={() => {
+        if (acceptableDrawing === false) {
+          middleMessage = "We're pretty sure this is not a crocodile :(";
+          buttonMessage = "Submit for manual review"
+        }
+        handleMouseEnter();
+      }}
+      on:mouseleave={() => {
+        if (acceptableDrawing === false) {
+          middleMessage = "Draw a crocodile";
+          buttonMessage = "My crocodile is done ->"
+        }
+        handleMouseLeave(4000);
+      }}
+    >
+      <div
+        class="text-[#ffffff] text-left font-all-font-family text-all-font-size relative"
+      >
+        {buttonMessage}
+      </div>
+    </div>
 </div>

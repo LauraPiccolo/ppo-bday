@@ -10,22 +10,34 @@
   let width = 0;
   let height = 0;
 
+  let canvasInitTimeOut;
+
   // Function to update canvas size when window resizes
   function updateCanvasSize() {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    if (render) {
-      render.canvas.width = width;
-      render.canvas.height = height;
-      Matter.Render.lookAt(render, {
-        min: { x: 0, y: 0 },
-        max: { x: width, y: height },
-      });
+    if(render) {
+      if(canvasInitTimeOut) clearTimeout(canvasInitTimeOut)
+      Matter.Render.stop(render);
+      Matter.Runner.stop(runner);
+      Matter.World.clear(engine.world);
+      Matter.Engine.clear(engine);
+      render.canvas.remove();
+      render.textures = {};
     }
+    canvasInitTimeOut = setTimeout(() => initCanvas(), 500)
+    // width = window.innerWidth;
+    // height = window.innerHeight;
+    // console.log(width, height)
+    // if (render) {
+    //   render.canvas.width = width;
+    //   render.canvas.height = height;
+    //   Matter.Render.lookAt(render, {
+    //     min: { x: 0, y: 0 },
+    //     max: { x: width, y: height },
+    //   });
+    // }
   }
 
-  onMount(async () => {
-    Matter = await import("matter-js");
+  const initCanvas = () => {
     const {
       Engine,
       Render,
@@ -120,6 +132,7 @@
     if ( typeof DeviceOrientationEvent !== "undefined" &&
       typeof DeviceOrientationEvent.requestPermission === "function") {
       console.log('device orientation exists')
+      gyroscopePossible = true
       window.addEventListener("deviceorientation", (event) => {
         // event.beta  = front/back tilt (-180 to 180)
         // event.gamma = left/right tilt (-90 to 90)
@@ -134,18 +147,28 @@
       });
     }
 
+  }
+ 
+  onMount(async () => {
+    Matter = await import("matter-js");
+    initCanvas()
     // --- RESIZE HANDLER ---
     window.addEventListener("resize", updateCanvasSize);
   });
+
+  let gyroscopePermission = false;
+  let gyroscopePossible = false;
 
   const allowGyroscope = async () => {
       if (
         typeof DeviceOrientationEvent !== "undefined" &&
         typeof DeviceOrientationEvent.requestPermission === "function"
       ) {
-        alert('Asking for permssion')
+        // gyroscopePossible = true;
+        // alert('Asking for permssion')
         const response = await DeviceOrientationEvent.requestPermission();
         if (response === "granted") {
+          gyroscopePermission = true;
           window.addEventListener("deviceorientation", handleOrientation);
         }
       }
@@ -154,14 +177,16 @@
 
 <div bind:this={container} class="physics-container"></div>
 
-<!-- <a
+<a
+  href="/"
   class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 absolute right-[20px] bottom-[20px] draw-link"
 >
   <button class="text-left font-all-font-family text-all-font-size relative">
     DRAW YOUR CROCODILE →
   </button>
-</a> -->
+</a>
 
+{#if gyroscopePossible && gyroscopePermission === false}
 <button
   class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 absolute right-[20px] bottom-[20px] draw-link" on:click={allowGyroscope}
 >
@@ -169,12 +194,15 @@
     ALLOW GYROSCOPE FOR MORE FUN →
   </p>
 </button>
+{/if}
 
 <style>
   .physics-container {
     position: fixed;
     inset: 0;
     overflow: hidden;
+        width: 100vw;
+    height: 100vh;
   }
 
   canvas {

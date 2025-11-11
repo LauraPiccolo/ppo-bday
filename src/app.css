@@ -35,3 +35,17 @@
 .alpha-selector, .color-info-box {
     display: none !important;
 }
+
+h1 {
+    font-size: 15vw;
+    line-height: 75%;
+    letter-spacing: -2vw;
+} 
+
+.button-submit {
+    transition: .3s opacity;
+}
+
+.button-submit:hover {
+    opacity: 1 !important;
+}

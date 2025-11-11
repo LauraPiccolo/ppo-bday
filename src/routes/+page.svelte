@@ -1,7 +1,11 @@
 <script>
   import Canvas from "../components/Canvas.svelte";
-  // import Gallery from "../components/Gallery.svelte";
+  import { page } from '$app/stores';
+	let key;
+	$: key = $page.url.pathname;
 
 </script>
+
+{#key key}
 <Canvas />
- <!-- <Gallery /> -->
+{/key}
