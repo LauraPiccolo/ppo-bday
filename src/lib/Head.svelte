@@ -1,6 +1,6 @@
 <svelte:head>
 <title>
-      PPO 7th Birthday
+      PPO's 7th Birthday
     </title>
     <meta
       name="description"
@@ -16,7 +16,7 @@
     <meta property="og:url" content="ppo-bday.vercel.app" />
     <meta
       property="og:title"
-      content="PPO 7th Birthday"
+      content="PPO's 7th Birthday"
     />
     <meta
       property="og:description"
