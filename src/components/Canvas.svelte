@@ -113,14 +113,17 @@
     isDrawing = false;
   };
 
-  const handleMove = (test) => {
-    let x1 = test.offsetX;
-    let y1 = test.offsetY;
+  const handleMove = (event) => {
+    // event.preventDefault();
+    // event.stopPropagation();
+
+    let x1 = event.offsetX;
+    let y1 = event.offsetY;
     // console.log(test)
     cursor = {
       opacity: 1,
-      x: test.clientX,
-      y: test.clientY
+      x: event.clientX,
+      y: event.clientY
     }
     if (!isDrawing) return;
 
@@ -362,12 +365,12 @@
 <!-- <p on:click={handleClick}>TEST FILL</p> -->
 
 <div
-  class="absolute bottom-[105px] left-[20px] z-30 s:right-[19px] s:left-[unset] s:bottom-[unset] s:top-[130px]"
+  class="absolute bottom-[115px] left-[35px] z-40 s:left-[unset] s:right-[20px] s:bottom-[unset] s:top-[50px] rounded-[5px] overflow-hidden"
   style="opacity: {colorPickerOpen ? 1 : 0}; transition: .5s opacity;
   pointer-events: {colorPickerOpen ? 'auto' : 'none'}"
   on:mouseleave={() => (colorPickerOpen = false)}
 >
-  <HsvPicker on:colorChange={changeColor} startColor={color} />
+  <HsvPicker on:colorChange={changeColor} startColor={color}/>
 </div>
 
 <canvas
@@ -405,24 +408,22 @@
   style="opacity: {footerOpacity}; transition: .9s opacity;"
 >
   <div
-    class="text-[#484747] text-left font-all-font-family text-all-font-size leading-all-line-height font-all-font-weight relative z-20 s:fixed s:top-[50px] s:right-[20px] s:text-right s:opacity-50 uppercase w-[270px]"
+    class="text-[#484747] text-left font-all-font-family text-all-font-size leading-all-line-height font-all-font-weight relative z-20 s:fixed s:top-[50px] s:left-[20px] uppercase w-[270px] bg-white s:px-[10px] s:py-[8px] s:w-[180px] px-[16px] py-[10px] rounded-[5px]"
   >
-    <span on:click={removeLastStroke} class="cursor-pointer">Cancel last line <span class="key-code">[Z]</span></span>
-    <br />
-    <span on:click={clearCanvas} class="cursor-pointer">Clear canvas <span class="key-code">[X]</span></span>
-    <br />
+  <h2 class="opacity-50 mb-[10px]">TOOLBOX</h2>
+    <span on:click={removeLastStroke} class="cursor-pointer block s:mb-[2px]"><div class="w-[10px] h-[11px] inline-block mr-[7px] mb-[-1px]" style="background-image: url('/back.svg'); background-repeat: no-repeat; background-size: contain;"/>Cancel last line <span class="key-code">[Z]</span></span>
+    <span on:click={clearCanvas} class="cursor-pointer block s:mb-[2px]"><div class="w-[10px] h-[11px] inline-block mr-[7px] mb-[-1px]" style="background-image: url('/clear.svg'); background-repeat: no-repeat; background-size: contain;"/>Clear canvas <span class="key-code">[X]</span></span>
     <span
-    class="cursor-pointer"
+    class="cursor-pointer block s:mb-[2px]"
       on:click={() => {
         colorPickerOpen = true;
-      }}>Pick another color <span class="key-code">[C]</span></span
+      }}><div class="w-[11px] h-[11px] inline-block mr-[7px] mb-[-1px]" style="background-color: {color}; border-radius: 50%; border: solid 1px black"/>Pick another color <span class="key-code">[C]</span></span
     >
-    <br />
-    <a href="/gallery" class="opacity-50 s:opacity-100">Skip to gallery -></a>
+    <a href="/gallery" class="opacity-50 block s:mb-[2px]">Skip to gallery -></a>
   </div>
 
   <div
-    class="text-[#484747] text-center font-big-font-family text-big-font-size leading-big-line-height font-big-font-weight relative font-all-font-family text-all-font-size uppercase w-[250px] h-[48px] s:fixed s:bottom-[20vh] s:w-full s:text-center s:ml-[-0px] text-balance pointer-events-none"
+    class="text-[#484747] text-center font-big-font-family text-big-font-size leading-big-line-height font-big-font-weight relative font-all-font-family text-all-font-size uppercase w-[250px] h-[48px] s:fixed s:bottom-[20vh] s:w-full s:text-center s:ml-[-0px] text-balance pointer-events-none s:px-[40px]"
   >
     {#if acceptableDrawing === true}
       NICE CROCODILE!

@@ -179,7 +179,7 @@
 
 {#if gyroscopePossible && gyroscopePermission === false}
 <button
-  class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 absolute right-[20px] bottom-[20px] draw-link s:right-unset" on:click={allowGyroscope}
+  class="rounded-[5px] py-[20px] px-[40px] flex flex-row items-center justify-center shrink-0 absolute right-[20px] bottom-[20px] draw-link s:right-[unset] s:bottom-[40px]" on:click={allowGyroscope}
 >
   <p class="text-left font-all-font-family text-all-font-size relative">
     ALLOW GYROSCOPE FOR MORE FUN →
