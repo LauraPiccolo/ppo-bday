@@ -10,6 +10,8 @@
   let width = 0;
   let height = 0;
 
+
+
   let canvasInitTimeOut;
 
   // Function to update canvas size when window resizes
