@@ -13,4 +13,5 @@ export async function load({ parent }) {
     crocoImages: res.data.assets,
   };
 }
+
 // export const ssr = false;
