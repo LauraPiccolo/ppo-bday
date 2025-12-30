@@ -220,7 +220,7 @@
   };
 
   const Storyblok = new StoryblokClient({
-    oauthToken: "H3ElWR00uEq6Q6XQQIqIQwtt-237943-cU8BbQshuCCtvYHHhb",
+    oauthToken: "H3ElWR00uEq6Q6XQQIqIQwtt-237943-cU8BbQshuCCtvYHHhb9U",
   });
 
   let footerOpacity = 1;
